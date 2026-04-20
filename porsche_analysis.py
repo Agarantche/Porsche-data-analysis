@@ -203,22 +203,22 @@ print(f"  Penalty           : {nocat_avg - cat_avg:.0f} hp ({(nocat_avg - cat_av
 # ── 5. PORSCHE THEME ─────────────────────────────────────────────────────────
 
 COLOR_MAP = {
-    "Original": "#8890a0",
-    "G-Series": "#a0aab8",
-    "964":      "#5dcaa5",
-    "993":      "#1d9e75",
-    "996":      "#85b7eb",
-    "997":      "#e87020",
-    "991":      "#e06050",
-    "992":      "#e8a030",
+    "Original": "#98c1d9",   # Powder Blue
+    "G-Series": "#3d5a80",   # Dusk Blue
+    "964":      "#7ab3d4",
+    "993":      "#5b9ec9",
+    "996":      "#ee6c4d",   # Burnt Peach
+    "997":      "#f08d72",
+    "991":      "#e0fbfc",   # Light Cyan
+    "992":      "#b0e8ea",
 }
 
-DARK_BG    = "#0d0e10"   # near-black page background
-DARK_PAPER = "#141618"   # chart plot area
-DARK_GRID  = "#252830"   # subtle gridlines
-DARK_TEXT  = "#d8dde8"   # primary text
-TITLE_COL  = "#ffffff"   # chart titles
-ACCENT     = "#1a6fc4"   # Porsche blue
+DARK_BG    = "#293241"   # Jet Black
+DARK_PAPER = "#1e2a38"   # surface
+DARK_GRID  = "#2d3d52"   # subtle gridlines
+DARK_TEXT  = "#e0fbfc"   # Light Cyan
+TITLE_COL  = "#e0fbfc"
+ACCENT     = "#ee6c4d"   # Burnt Peach
 
 BASE = dict(
     paper_bgcolor=DARK_BG,
@@ -229,11 +229,11 @@ BASE = dict(
 )
 
 AX = dict(
-    gridcolor=DARK_GRID,
-    linecolor=DARK_GRID,
-    zerolinecolor=DARK_GRID,
-    tickfont=dict(color=DARK_TEXT),
-    title_font=dict(color=DARK_TEXT),
+    gridcolor="#2d3d52",
+    linecolor="#3d5a80",
+    zerolinecolor="#3d5a80",
+    tickfont=dict(color="#98c1d9"),
+    title_font=dict(color="#98c1d9"),
 )
 
 # ── 6. CHARTS ─────────────────────────────────────────────────────────────────
@@ -301,14 +301,14 @@ fig3 = px.line(
     labels={"generation": "Generation", "hp_per_litre": "HP / litre"},
 )
 fig3.update_traces(line_color=ACCENT, marker_size=9,
-                   marker_color="#ff4444", line_width=2)
+                   marker_color="#98c1d9", line_width=2)
 fig3.update_layout(**BASE, height=420, xaxis=AX, yaxis=AX)
 
 # Chart 4: side-by-side bars comparing air-cooled and water-cooled across weight, power, and score
 cooling_plot = cooling_stats.reset_index()
 subplot_labels = ["Avg weight (kg)", "Avg power (hp)", "Avg driver score"]
 fig4 = make_subplots(rows=1, cols=3, subplot_titles=subplot_labels)
-colors_cool = {"Air-Cooled": "#8890a0", "Water-Cooled": ACCENT}
+colors_cool = {"Air-Cooled": "#98c1d9", "Water-Cooled": ACCENT}
 
 for i, col in enumerate(["avg_weight", "avg_power", "avg_score"], start=1):
     for _, row in cooling_plot.iterrows():
@@ -346,7 +346,7 @@ fig5 = px.strip(
     hover_name="engine",
     title="G-Series (1974–1989) — emissions impact on power output",
     labels={"start_of_production": "Year", "power": "Power (hp)", "variant": "Variant type"},
-    color_discrete_map={"CAT (emissions)": ACCENT, "Non-CAT": "#909090"},
+    color_discrete_map={"CAT (emissions)": ACCENT, "Non-CAT": "#98c1d9"},
 )
 fig5.update_layout(**BASE, height=420, xaxis=AX, yaxis=AX)
 
@@ -359,7 +359,7 @@ fig6 = px.scatter(
     hover_name="engine",
     title="HP per kg over time — with smoothed trend",
     labels={"start_of_production": "Year", "hp_per_kg": "HP / kg", "cooling_type": "Cooling"},
-    color_discrete_map={"Air-Cooled": "#8890a0", "Water-Cooled": ACCENT},
+    color_discrete_map={"Air-Cooled": "#98c1d9", "Water-Cooled": ACCENT},
 )
 fig6.update_layout(**BASE, height=460, xaxis=AX, yaxis=AX)
 
@@ -370,7 +370,7 @@ chart_meta = [
     {"id": "driver-score", "label": "Driver Score",
      "description": "Ranks every 911 variant using (HP/Weight) divided by 0-60 time, normalized so the best car scores exactly 100. Higher scores reward cars that deliver the most performance per kilogram as quickly as possible."},
     {"id": "sweet-spot", "label": "Weight vs Driver Score",
-     "description": "Each dot is a single 911 variant plotted by kerb weight against its driver score. The shaded red zone marks where Porsche consistently found the best balance between agility and outright performance."},
+     "description": "Each dot is a single 911 variant plotted by kerb weight against its driver score. The shaded zone marks where Porsche consistently found the best balance between agility and outright performance."},
     {"id": "hp-per-litre", "label": "Engine Efficiency",
      "description": "Average horsepower extracted from every litre of displacement, grouped by generation. The flat middle period reflects the emissions era; the steep climb from the 997 onwards shows what direct injection and modern turbocharging unlocked."},
     {"id": "air-vs-water", "label": "Air vs Water-Cooled",
@@ -444,6 +444,16 @@ year_min       = int(df["start_of_production"].min())
 year_max       = int(df["start_of_production"].max())
 n_lap_matches  = int(df["lap_seconds"].notna().sum())
 
+# build generation legend from COLOR_MAP (same order as charts)
+legend_items_html = ""
+for gen in GEN_ORDER:
+    color = COLOR_MAP.get(gen, "#888")
+    legend_items_html += (
+        f'<div class="legend-item">'
+        f'<span class="legend-dot" style="background:{color}"></span>{gen}'
+        f'</div>'
+    )
+
 # build sidebar navigation — one link per chart, dot indicator via CSS ::before
 nav_links_parts = []
 for m in chart_meta:
@@ -479,12 +489,12 @@ html = f"""<!DOCTYPE html>
     *, *::before, *::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
 
     :root {{
-      --bg:        #0d0e10;
-      --surface:   #141618;
-      --border:    #252830;
-      --text:      #d8dde8;
-      --muted:     #6a7488;
-      --accent:    #1a6fc4;
+      --bg:        #293241;
+      --surface:   #1e2a38;
+      --border:    #3d5a80;
+      --text:      #e0fbfc;
+      --muted:     #98c1d9;
+      --accent:    #ee6c4d;
       --sidebar-w: 260px;
     }}
 
@@ -500,7 +510,7 @@ html = f"""<!DOCTYPE html>
       top: 0; left: 0;
       width: var(--sidebar-w);
       height: 100vh;
-      background: #08090a;
+      background: #1a2432;
       border-right: 1px solid var(--border);
       display: flex;
       flex-direction: column;
@@ -562,7 +572,7 @@ html = f"""<!DOCTYPE html>
       align-items: center;
       gap: 11px;
       padding: 9px 22px;
-      color: #5e6878;
+      color: #5a7a90;
       text-decoration: none;
       font-size: 0.8rem;
       transition: color 0.18s;
@@ -571,11 +581,11 @@ html = f"""<!DOCTYPE html>
       content: '';
       width: 6px; height: 6px;
       border-radius: 50%;
-      border: 1.5px solid #2e3340;
+      border: 1.5px solid #3d5a80;
       flex-shrink: 0;
       transition: background 0.18s, border-color 0.18s, transform 0.18s;
     }}
-    .nav-link:hover {{ color: #c8d0e0; }}
+    .nav-link:hover {{ color: #98c1d9; }}
     .nav-link:hover::before {{
       border-color: var(--accent);
       transform: scale(1.25);
@@ -593,7 +603,7 @@ html = f"""<!DOCTYPE html>
     .sidebar-stats {{
       margin: 6px 14px 14px;
       padding: 13px 14px;
-      background: #0e1012;
+      background: #1e2a38;
       border: 1px solid var(--border);
       border-radius: 6px;
     }}
@@ -623,6 +633,39 @@ html = f"""<!DOCTYPE html>
       color: var(--muted);
     }}
 
+    .sidebar-legend {{
+      margin: 0 14px 14px;
+      padding: 12px 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+    }}
+    .legend-heading {{
+      font-size: 0.55rem;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 9px;
+    }}
+    .legend-items {{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px 8px;
+    }}
+    .legend-item {{
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 0.7rem;
+      color: var(--text);
+    }}
+    .legend-dot {{
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }}
+
     .sidebar-footer {{
       padding: 11px 22px;
       border-top: 1px solid var(--border);
@@ -636,8 +679,8 @@ html = f"""<!DOCTYPE html>
 
     /* ── Header ── */
     header {{
-      background: linear-gradient(135deg, #0d0e10 0%, #001428 65%, #001e3e 100%);
-      border-bottom: 1px solid #001428;
+      background: linear-gradient(135deg, #1a2432 0%, #293241 65%, #1e2a38 100%);
+      border-bottom: 1px solid rgba(61,90,128,0.4);
       padding: 52px 60px 44px;
       position: relative;
       overflow: hidden;
@@ -646,7 +689,7 @@ html = f"""<!DOCTYPE html>
       content: '';
       position: absolute;
       inset: 0;
-      background: radial-gradient(ellipse at 78% 50%, rgba(26,111,196,0.18) 0%, transparent 60%);
+      background: radial-gradient(ellipse at 78% 50%, rgba(238,108,77,0.15) 0%, transparent 60%);
       pointer-events: none;
     }}
     header::after {{
@@ -721,8 +764,8 @@ html = f"""<!DOCTYPE html>
       transition: border-color 0.25s, box-shadow 0.25s;
     }}
     .chart-body:hover {{
-      border-color: rgba(26,111,196,0.4);
-      box-shadow: 0 6px 32px rgba(26,111,196,0.12);
+      border-color: rgba(238,108,77,0.4);
+      box-shadow: 0 6px 32px rgba(238,108,77,0.12);
     }}
 
     @keyframes fadeUp {{
@@ -765,6 +808,12 @@ html = f"""<!DOCTYPE html>
         <span class="stat-lbl">lap times matched</span>
       </div>
     </div>
+    <div class="sidebar-legend">
+      <div class="legend-heading">Generations</div>
+      <div class="legend-items">
+        {legend_items_html}
+      </div>
+    </div>
     <div class="sidebar-footer">
       Kaggle · fastestlaps.com
     </div>
@@ -785,22 +834,33 @@ html = f"""<!DOCTYPE html>
     const sections = document.querySelectorAll('.chart-section');
     const links    = document.querySelectorAll('.nav-link');
 
-    const io = new IntersectionObserver((entries) => {{
+    // Fade-in animations: trigger when section enters viewport
+    const fadeIO = new IntersectionObserver((entries) => {{
       entries.forEach(e => {{
-        if (e.isIntersecting) {{
-          e.target.style.animationPlayState = 'running';
-          links.forEach(l => l.classList.remove('active'));
-          const id = e.target.id;
-          const active = document.querySelector('.nav-link[href="#' + id + '"]');
-          if (active) active.classList.add('active');
-        }}
+        if (e.isIntersecting) e.target.style.animationPlayState = 'running';
       }});
-    }}, {{ threshold: 0.2 }});
+    }}, {{ threshold: 0.05 }});
 
     sections.forEach(s => {{
       s.style.animationPlayState = 'paused';
-      io.observe(s);
+      fadeIO.observe(s);
     }});
+
+    // Active nav link: find the section whose top is closest to (but above) 40% viewport height
+    function updateActive() {{
+      let current = '';
+      sections.forEach(s => {{
+        if (s.getBoundingClientRect().top <= window.innerHeight * 0.4) current = s.id;
+      }});
+      links.forEach(l => l.classList.remove('active'));
+      if (current) {{
+        const a = document.querySelector('.nav-link[href="#' + current + '"]');
+        if (a) a.classList.add('active');
+      }}
+    }}
+
+    window.addEventListener('scroll', updateActive, {{ passive: true }});
+    updateActive();
   </script>
 </body>
 </html>"""
