@@ -48,7 +48,7 @@ def find_best_match(name, choices):
 print("Fetching Nürburgring lap times …")
 lap_df = get_lap_times()
 print(f"  → {len(lap_df)} entries scraped")
-
+# ── PHASE 2: DATA PREPARATION ──
 # ── 2. LOAD & CLEAN ────────────────────────────────────────────────────────────
 
 # load the Kaggle Porsche 911 dataset (~300 variants)
@@ -105,6 +105,7 @@ else:
     df["lap_seconds"] = np.nan
     df["matched_name"] = np.nan
 
+# ── PHASE 3: ANALYSIS & VISUALIZATION ──
 # ── 3. DERIVED METRICS ─────────────────────────────────────────────────────────
 
 # power-to-weight ratio — higher means more punch per kilogram
@@ -200,6 +201,7 @@ print(f"  Non-CAT avg power : {nocat_avg:.0f} hp")
 print(f"  CAT avg power     : {cat_avg:.0f} hp")
 print(f"  Penalty           : {nocat_avg - cat_avg:.0f} hp ({(nocat_avg - cat_avg) / nocat_avg * 100:.1f}%)")
 
+
 # ── 5. PORSCHE THEME ─────────────────────────────────────────────────────────
 
 COLOR_MAP = {
@@ -251,8 +253,8 @@ fig1 = px.bar(
     color="generation",
     color_discrete_map=COLOR_MAP,
     orientation="h",
-    title="Top 20 Porsche 911 variants — Driver Score (0–100)",
-    labels={"score_norm": "Driver Score", "label": ""},
+    title="Top 20 Porsche 911 variants — Driver Score",
+    labels={"score_norm": "Driver Score (higher = better)", "label": ""},
     hover_data={"power": True, "kerb_weight": True,
                 "acceleration_0-60mph": True, "generation": True},
 )
@@ -392,7 +394,7 @@ if len(nbr_df) > 0:
         color_discrete_map=COLOR_MAP,
         orientation="h",
         title="Nürburgring Score — (HP/kg) ÷ Lap Time (matched cars only)",
-        labels={"nbr_score": "Nürburgring Score (0–100)", "label": ""},
+        labels={"nbr_score": "Nürburgring Score (higher = better)", "label": ""},
         hover_data={"lap_seconds": True, "power": True, "generation": True},
     )
     fig7.update_layout(
@@ -556,7 +558,7 @@ html = f"""<!DOCTYPE html>
       text-transform: uppercase;
     }}
 
-    .sidebar-nav {{ padding: 18px 0 8px; flex: 1; }}
+    .sidebar-nav {{ padding: 18px 0 8px; flex: 0 0 auto; }}
     .nav-section {{
       display: block;
       font-size: 0.56rem;
@@ -667,6 +669,7 @@ html = f"""<!DOCTYPE html>
     }}
 
     .sidebar-footer {{
+      margin-top: auto;
       padding: 11px 22px;
       border-top: 1px solid var(--border);
       font-size: 0.63rem;
@@ -726,7 +729,7 @@ html = f"""<!DOCTYPE html>
 
     /* ── Main ── */
     main {{
-      max-width: 1080px;
+      max-width: 1600px;
       margin: 0 auto;
       padding: 52px 44px 80px;
     }}
@@ -866,9 +869,10 @@ html = f"""<!DOCTYPE html>
 </html>"""
 
 # save the finished HTML file next to this script, then open it in the browser
-out_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "porsche_dashboard.html")
+out_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "index.html")
 with open(out_path, "w", encoding="utf-8") as f:
     f.write(html)
 
 webbrowser.open(f"file:///{out_path.replace(os.sep, '/')}")
 print(f"Dashboard saved → {out_path}")
+
