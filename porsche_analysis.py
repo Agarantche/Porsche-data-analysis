@@ -253,7 +253,7 @@ fig1 = px.bar(
     color="generation",
     color_discrete_map=COLOR_MAP,
     orientation="h",
-    title="Top 20 Porsche 911 variants — Driver Score",
+    title="Top Porsche 911 variants — Driver Score",
     labels={"score_norm": "Driver Score (higher = better)", "label": ""},
     hover_data={"power": True, "kerb_weight": True,
                 "acceleration_0-60mph": True, "generation": True},
@@ -370,7 +370,7 @@ figs = [fig1, fig2, fig3, fig4, fig5, fig6]
 # descriptions and anchor IDs for each chart — used to build the sidebar and chart headers
 chart_meta = [
     {"id": "driver-score", "label": "Driver Score",
-     "description": "Ranks every 911 variant using (HP/Weight) divided by 0-60 time, normalized so the best car scores exactly 100. Higher scores reward cars that deliver the most performance per kilogram as quickly as possible."},
+     "description": "Ranks every 911 variant using (HP/Weight) divided by 0-60 time. Higher scores reward cars that deliver the most performance per kilogram as quickly as possible."},
     {"id": "sweet-spot", "label": "Weight vs Driver Score",
      "description": "Each dot is a single 911 variant plotted by kerb weight against its driver score. The shaded zone marks where Porsche consistently found the best balance between agility and outright performance."},
     {"id": "hp-per-litre", "label": "Engine Efficiency",
