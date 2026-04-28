@@ -23,8 +23,8 @@ Loads a dataset of ~290 Porsche 911 variants from Kaggle, scrapes live Nürburgr
 
 ## Screenshots
 
-![Driver Score Rankings](screenshots/driver-score.png)
-![Emissions Penalty Analysis](screenshots/emissions-penalty.png)
+![Air-Cooled vs Water-Cooled Comparison](screenshots/air-vs-water.png)
+
 ![Track Width vs Lap Time](screenshots/track-width.png)
 
 ## Tech Stack
@@ -42,7 +42,7 @@ The script scrapes lap data, builds all charts, and opens the dashboard in your 
 
 ## Data Sources
 
-- [Every Porsche 911 dataset (Kaggle)](https://www.kaggle.com/datasets/) — replace with your actual link
+- Every Porsche 911 dataset (Kaggle) — [link to your actual Kaggle dataset]
 - Nürburgring lap times scraped from [fastestlaps.com](https://fastestlaps.com/tracks/nordschleife)
 
 ## Project Structure
@@ -52,7 +52,7 @@ The script scrapes lap data, builds all charts, and opens the dashboard in your 
 ├── data/
 │   └── porsche_911.csv          # Kaggle dataset
 ├── porsche_analysis.py          # Main analysis script
-├── index.html                   # Generated dashboard (also serves as GitHub Pages site)
+├── index.html                   # Generated dashboard
 ├── screenshots/                 # README images
 └── README.md
 ```
